@@ -1,4 +1,5 @@
 const express = require("express")
+const schemas = require("./shemas")
 const app = express()
 const WSserver = require("express-ws")(app)
 const aWss = WSserver.getWss()
@@ -19,8 +20,9 @@ app.ws("/", (ws, req) => {
         ws.send(JSON.stringify({ method: "rooms", rooms }))
         break
       case "create-room":
+        msg.room.schema = schemas[~~(Math.random() * schemas.length)]
         rooms.push(msg.room)
-        ws.send(JSON.stringify({ method: "create-room", id: msg.room.id }))
+        ws.send(JSON.stringify({ method: "create-room", id: msg.room.id, schema: msg.room.schema }))
         broadcastMessage(ws, { method: "rooms", rooms })
         break
       case "enter-room":
@@ -33,7 +35,7 @@ app.ws("/", (ws, req) => {
         updateScoreHandler(ws, msg)
         break
       case "event":
-        broadcastMessage(ws, msg)
+        roomBroadcastMessage(ws, msg)
         break
     }
   })
@@ -57,7 +59,7 @@ const enterRoomHandler = (ws, msg) => {
   room.clients.add(ws)
 
   room.clients.forEach(client => {
-      client.send(JSON.stringify({ method: "enter-room", payload: Array.from(room.players) }))
+      client.send(JSON.stringify({ method: "enter-room", players: Array.from(room.players), schema: room.schema }))
   })
 }
 
@@ -70,13 +72,13 @@ const updateScoreHandler = (ws, msg) => {
 
 const exitRoomHandler = (ws, msg) => {
   ws.roomId = null
-  
+
   const room = rooms.find(room => room.id === msg.roomId)
   room.clients.delete(ws)
   room.players.delete(ws.id)
 
   room.clients.forEach(client => {
-    client.send(JSON.stringify({ method: "enter-room", payload: Array.from(room.players) }))
+    client.send(JSON.stringify({ method: "enter-room", players: Array.from(room.players), schema: room.schema }))
   })
 
   if (room.clients.size === 0) {
@@ -90,6 +92,13 @@ const exitRoomHandler = (ws, msg) => {
 
 const broadcastMessage = (ws, msg) => {
   aWss.clients.forEach((client) => {
+    client.send(JSON.stringify(msg))
+  })
+}
+
+const roomBroadcastMessage =  (ws, msg) => {
+  const room = rooms.find(room => room.id === msg.roomId)
+  room.clients.forEach(client => {
     client.send(JSON.stringify(msg))
   })
 }
