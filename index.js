@@ -37,6 +37,9 @@ app.ws("/", (ws, req) => {
       case "event":
         roomBroadcastMessage(ws, msg)
         break
+      case "restart":
+        restartHandler(ws, msg)
+        break
     }
   })
 })
@@ -60,6 +63,16 @@ const enterRoomHandler = (ws, msg) => {
 
   room.clients.forEach(client => {
       client.send(JSON.stringify({ method: "enter-room", players: Array.from(room.players), schema: room.schema }))
+  })
+}
+
+const restartHandler = (ws, msg) => {
+  const room = rooms.find(room => room.id === msg.roomId)
+  const roomIndex = schemas.indexOf(room.schema)
+  room.schema = schemas[(roomIndex + 1) % schemas.length]
+  console.log('schema', (roomIndex + 1) % schemas.length)
+  room.clients.forEach(client => {
+    client.send(JSON.stringify({ method: "restart", schema: room.schema }))
   })
 }
 
