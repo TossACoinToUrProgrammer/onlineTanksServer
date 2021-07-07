@@ -1,17 +1,19 @@
 const schemas = [
   {
-    playerPos_0: {
-      x: 300,
-      y: 300,
-    },
-    playerPos_1: {
-      x: 400,
-      y: 400,
-    },
-    playerPos_2: {
-      x: 0,
-      y: 0,
-    },
+    playerPositions: [
+      {
+        x: 300,
+        y: 300,
+      },
+      {
+        x: 0,
+        y: 0,
+      },
+      {
+        x: 400,
+        y: 400,
+      }
+    ],
     walls: [
       { type: "horizontal", startX: 140, endX: 420, startY: 100, endY: 135 },
       { type: "vertical", startX: 100, endX: 135, startY: 200, endY: 305 },
@@ -22,18 +24,20 @@ const schemas = [
     wallImage: "https://lh3.googleusercontent.com/_seoZMCjPGus0YWB7WRqCI9xNCGQ97wyCG5JZOPWnTvkz5taKtyhWL4Bj_4Xpw5U-dPi=s64",
   },
   {
-    playerPos_0: {
-      x: 300,
-      y: 300,
-    },
-    playerPos_1: {
-      x: 400,
-      y: 400,
-    },
-    playerPos_2: {
-      x: 0,
-      y: 0,
-    },
+    playerPositions: [
+      {
+        x: 300,
+        y: 300,
+      },
+      {
+        x: 0,
+        y: 0,
+      },
+      {
+        x: 400,
+        y: 400,
+      }
+    ],
     walls: [
       { type: "horizontal", startX: 0, endX: 350, startY: 100, endY: 135 },
       { type: "vertical", startX: 100, endX: 135, startY: 135, endY: 380 },
